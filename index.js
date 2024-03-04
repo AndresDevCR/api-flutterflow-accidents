@@ -36,30 +36,13 @@ app.get('/', async (req, res) => {
       }
 
       // Comprobar si existe la propiedad markers en el resultado
-      if (!result.markers || !result.markers.marker) {
+      if (!result || !result.markers || !result.markers.marker) {
         console.error('No se encontraron marcadores en la respuesta XML');
         return res.status(500).json({ error: 'Error interno del servidor' });
       }
 
       const markers = result.markers.marker;
-
-      // Función para convertir el formato de datos
-      const convertirDatos = (markers, tipoColision) => {
-        return markers.map(marker => ({
-          id: marker.id,
-          name: marker.name[0],
-          hora: marker.hora[0],
-          lat: parseFloat(marker.lat[0]),
-          lng: parseFloat(marker.lng[0]),
-          type: parseInt(marker.type[0]),
-          hasta: marker.hasta[0],
-          Nombre_Evento: marker.Nombre_Evento[0],
-          tipoColision: tipoColision
-        }));
-      };
-
-      const resultado = convertirDatos(markers, 'tipoColision');
-      res.json(resultado);
+      res.json(markers);
     });
   } catch (error) {
     console.error('Error al obtener datos de la API externa:', error);
