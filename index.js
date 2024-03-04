@@ -29,36 +29,39 @@ app.use((req, res, next) => {
 app.get('/', async (req, res) => {
   try {
     const { data } = await axios.get(URL_API);
-    parseString(data, (err, result) => {
-      if (err) {
-        console.error('Error al convertir XML a JSON:', err);
-        return res.status(500).json({ error: 'Error interno del servidor' });
-      }
-
-      // Comprobar si existe la propiedad markers en el resultado
-      if (!result || !result.markers || !result.markers.marker) {
-        console.error('No se encontraron marcadores en la respuesta XML');
-        return res.status(500).json({ error: 'Error interno del servidor' });
-      }
-
-      // Renombrar el marcador "$" a "data"
-      const markers = result.markers.marker.map(marker => {
-        // Reemplazar el marcador "$" por el nombre "data"
-        const renamedMarker = { ...marker };
-        renamedMarker.data = renamedMarker['$'];
-        delete renamedMarker['$'];
-        return renamedMarker;
-      });
-
-      res.json(markers);
-    });
+    const parsedData = await parseXmlToJson(data);
+    res.json(parsedData);
   } catch (error) {
     console.error('Error al obtener datos de la API externa:', error);
     res.status(500).json({ error: 'Error al obtener datos de la API externa' });
   }
 });
 
+// Función para parsear XML a JSON de forma asincrónica
+function parseXmlToJson(xmlData) {
+  return new Promise((resolve, reject) => {
+    parseString(xmlData, (err, result) => {
+      if (err) {
+        console.error('Error al convertir XML a JSON:', err);
+        reject('Error interno del servidor');
+      }
+      
+      if (!result || !result.markers || !result.markers.marker) {
+        console.error('No se encontraron marcadores en la respuesta XML');
+        reject('Error interno del servidor');
+      }
 
+      const markers = result.markers.marker.map(marker => {
+        const renamedMarker = { ...marker };
+        renamedMarker.data = renamedMarker['$'];
+        delete renamedMarker['$'];
+        return renamedMarker;
+      });
+
+      resolve(markers);
+    });
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`Servidor Express funcionando en el puerto ${PORT}\n http://localhost:${PORT}`);
