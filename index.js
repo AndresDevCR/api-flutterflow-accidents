@@ -41,7 +41,15 @@ app.get('/', async (req, res) => {
         return res.status(500).json({ error: 'Error interno del servidor' });
       }
 
-      const markers = result.markers.marker;
+      // Renombrar el marcador "$" a "data"
+      const markers = result.markers.marker.map(marker => {
+        // Reemplazar el marcador "$" por el nombre "data"
+        const renamedMarker = { ...marker };
+        renamedMarker.data = renamedMarker['$'];
+        delete renamedMarker['$'];
+        return renamedMarker;
+      });
+
       res.json(markers);
     });
   } catch (error) {
@@ -49,6 +57,8 @@ app.get('/', async (req, res) => {
     res.status(500).json({ error: 'Error al obtener datos de la API externa' });
   }
 });
+
+
 
 app.listen(PORT, () => {
   console.log(`Servidor Express funcionando en el puerto ${PORT}\n http://localhost:${PORT}`);
