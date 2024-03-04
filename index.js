@@ -8,10 +8,17 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const URL_API = process.env.URL_API; // Agregar la URL de la API a una constante
+const URL_API = process.env.URL_API;
 
 app.use(bodyParser.json());
 
+// Middleware para manejar errores
+app.use((err, req, res, next) => {
+  console.error('Error interno del servidor:', err);
+  res.status(500).send('Error interno del servidor');
+});
+
+// Middleware para CORS
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
@@ -21,14 +28,13 @@ app.use((req, res, next) => {
 
 app.get('/', async (req, res) => {
   try {
-    const { data } = await axios.get(URL_API); // Usar la URL de la API definida anteriormente
+    const { data } = await axios.get(URL_API);
     parseString(data, (err, result) => {
       if (err) {
         console.error('Error al convertir XML a JSON:', err);
         return res.status(500).send('Error interno del servidor');
       }
-
-      // Comprobar si existe la propiedad markers en el resultado
+      
       if (!result.markers || !result.markers.marker) {
         console.error('No se encontraron marcadores en la respuesta XML');
         return res.status(500).send('Error interno del servidor');
