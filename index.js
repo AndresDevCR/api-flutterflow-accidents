@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 // Middleware para manejar errores
 app.use((err, req, res, next) => {
   console.error('Error interno del servidor:', err);
-  res.status(500).send('Error interno del servidor');
+  res.status(500).json({ error: 'Error interno del servidor' });
 });
 
 // Middleware para CORS
@@ -32,12 +32,13 @@ app.get('/', async (req, res) => {
     parseString(data, (err, result) => {
       if (err) {
         console.error('Error al convertir XML a JSON:', err);
-        return res.status(500).send('Error interno del servidor');
+        return res.status(500).json({ error: 'Error interno del servidor' });
       }
-      
+
+      // Comprobar si existe la propiedad markers en el resultado
       if (!result.markers || !result.markers.marker) {
         console.error('No se encontraron marcadores en la respuesta XML');
-        return res.status(500).send('Error interno del servidor');
+        return res.status(500).json({ error: 'Error interno del servidor' });
       }
 
       const markers = result.markers.marker;
@@ -62,7 +63,7 @@ app.get('/', async (req, res) => {
     });
   } catch (error) {
     console.error('Error al obtener datos de la API externa:', error);
-    res.status(500).send('Error interno del servidor');
+    res.status(500).json({ error: 'Error al obtener datos de la API externa' });
   }
 });
 
