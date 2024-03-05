@@ -55,8 +55,8 @@ function parseXmlToJson(xmlData) {
         const renamedMarker = { ...marker };
         renamedMarker.data = renamedMarker['$'];
         delete renamedMarker['$'];
-        renamedMarker.data.lat = parseFloat(renamedMarker.data.lat);
-        renamedMarker.data.lng = parseFloat(renamedMarker.data.lng);
+        renamedMarker.data.lat = parseString(renamedMarker.data.lat);
+        renamedMarker.data.lng = parseString(renamedMarker.data.lng);
         return renamedMarker;
       });
 
