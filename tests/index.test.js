@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../../src/index.js');
+const app = require('../index');
 
 describe('GET /search/:fechaInicio/:fechaFin/:tipo', () => {
   it('responds with JSON containing the parsed data based on query parameters', async () => {
