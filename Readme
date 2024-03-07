@@ -1,9 +1,6 @@
-
 # Ruta Alterna API
 
-
 This is a project developed by Codingraph, in collaboration with Ruta Alterna Org, in which the application aims to enhance the lives of its users when searching for an alternative route due to any unforeseen circumstances.
-
 
 ## Run Locally
 
@@ -26,9 +23,11 @@ To run tests, run the following command
 ```bash
   npm run test
 ```
+
 ```bash
   npm run test:coverage
 ```
+
 ```bash
   npm run test:watch
 ```
@@ -44,15 +43,17 @@ To run this project, you will need to add the following environment variables to
 
 **Server:** Node, Express, Swagger UI, Jest, Supertest, Axios, Cors, Dotenv, Nodemon.
 
-
 ## API Reference
 
 #### Swagger API documentarion
 
-```http
+```local server
   http://localhost:3011/api-docs/#/
 ```
 
+''' production server
+https://api-flutterflow-accidents.onrender.com/api-docs/
+'''
 
 #### Endpoints
 
@@ -60,16 +61,12 @@ To run this project, you will need to add the following environment variables to
   GET http://localhost:3011/search/{fechaInicio}/{fechaFin}/{tipo}
 ```
 
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `fechaInicio `      | `string` | **Required**. fechaInicio of item to fetch |
-| `fechaFin `      | `string` | **Required**. fechaFin of item to fetch |
-| `tipo `      | `string` | **Required**. tipo of item to fetch |
-
-
-
+| Parameter      | Type     | Description                                |
+| :------------- | :------- | :----------------------------------------- |
+| `fechaInicio ` | `string` | **Required**. fechaInicio of item to fetch |
+| `fechaFin `    | `string` | **Required**. fechaFin of item to fetch    |
+| `tipo `        | `string` | **Required**. tipo of item to fetch        |
 
 ## Authors
 
 - [@AndresDevCR](https://github.com/AndresDevCR)
-
