@@ -3,12 +3,41 @@ const axios = require('axios');
 const bodyParser = require('body-parser');
 const { parseString } = require('xml2js');
 const dotenv = require('dotenv');
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const URL_API = process.env.URL_API;
+
+// Swagger options
+const swaggerOptions = {
+  swaggerDefinition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Ruta Alterna API Documentation',
+      version: '1.0.0',
+      description: 'Documentation for your API',
+    },
+    servers: [
+      {
+        url: `http://localhost:${PORT}`,
+        description: 'Development server',
+      },
+      {
+        url: 'https://api-flutterflow-accidents.onrender.com/',
+        description: 'Production server',
+      }
+    ],
+  },
+  apis: ['./index.js'], // Path to the API routes file
+};
+
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(bodyParser.json());
 
@@ -26,9 +55,37 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/', async (req, res) => {
+/**
+ * @swagger
+ * /search/{fechaInicio}/{fechaFin}/{tipo}:
+ *   get:
+ *     description: Endpoint para buscar datos por fechaInicio, fechaFin y tipo
+ *     parameters:
+ *       - name: fechaInicio
+ *         in: path
+ *         description: Fecha de inicio de la búsqueda
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: fechaFin
+ *         in: path
+ *         description: Fecha de fin de la búsqueda
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: tipo
+ *         in: path
+ *         description: Tipo de búsqueda
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+app.get('/search/:fechaInicio/:fechaFin/:tipo', async (req, res) => {
   try {
-    const { data } = await axios.get(URL_API);
+    const { data } = await axios.get(`${URL_API}/recursos/dataparam.php?fechaInicio=${req.params.fechaInicio}&fechaFin=${req.params.fechaFin}&tipo=${req.params.tipo}`);
     const parsedData = await parseXmlToJson(data);
     res.json(parsedData);
   } catch (error) {
@@ -38,14 +95,14 @@ app.get('/', async (req, res) => {
 });
 
 // Función para parsear XML a JSON de forma asincrónica
-function parseXmlToJson(xmlData) {
+async function parseXmlToJson(xmlData) {
   return new Promise((resolve, reject) => {
     parseString(xmlData, (err, result) => {
       if (err) {
         console.error('Error al convertir XML a JSON:', err);
         reject('Error interno del servidor');
       }
-      
+
       if (!result || !result.markers || !result.markers.marker) {
         console.error('No se encontraron marcadores en la respuesta XML');
         reject('Error interno del servidor');
@@ -62,6 +119,8 @@ function parseXmlToJson(xmlData) {
     });
   });
 }
+
+module.exports = app;
 
 app.listen(PORT, () => {
   console.log(`Servidor Express funcionando en el puerto ${PORT}\n http://localhost:${PORT}`);
