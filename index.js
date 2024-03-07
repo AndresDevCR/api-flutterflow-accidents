@@ -27,7 +27,7 @@ const swaggerOptions = {
         description: 'Development server',
       },
       {
-        url: 'https://api-flutterflow-accidents.onrender.com/',
+        url: 'https://api-flutterflow-accidents.onrender.com',
         description: 'Production server',
       }
     ],
